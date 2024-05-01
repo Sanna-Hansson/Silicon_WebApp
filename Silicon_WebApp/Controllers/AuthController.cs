@@ -19,7 +19,7 @@ public class AuthController(UserManager<UserEntity> userManager, SignInManager<U
     }
 
     [HttpPost]
-    public async Task<IActionResult> SignUp(SignUpViewModel model, )
+    public async Task<IActionResult> SignUp(SignUpViewModel model)
     {
         if (ModelState.IsValid)
         {
@@ -41,12 +41,16 @@ public class AuthController(UserManager<UserEntity> userManager, SignInManager<U
 
                     if ((await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false)).Succeeded)
                         return LocalRedirect("/");
+                    else
+                     {
+                        return LocalRedirect("/signin");
+
+                     }
                 }
                 else
                 {
-                    return LocalRedirect("/signin");
+                    ViewData["StatusMessage"] = "Somthing went wrong. You can try again later or contact cutomer service.";
                 }
-
             }
             else
             {
