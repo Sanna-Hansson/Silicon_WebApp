@@ -6,6 +6,7 @@ public class SignInViewModel
 
     public string Password { get; set; } = null!;
 
+    public bool IsPressistent { get; set; }
 
 
 }
