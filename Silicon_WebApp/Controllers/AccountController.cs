@@ -15,10 +15,30 @@ public class AccountController(UserManager<UserEntity> userManager, ApplicationC
     private readonly UserManager<UserEntity> _userManager = userManager;
     private readonly ApplicationContext _context = context;
 
-    public IActionResult Details()
+    public async Task<IActionResult> Details()
     {
+        var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
-        var viewModel = new AccountDetailsViewModel();
+        var user = await _context.Users.Include(i => i.Address).FirstOrDefaultAsync(x => x.Id == nameIdentifier);
+
+        var viewModel = new AccountDetailsViewModel()
+        {
+            Basic = new AccountBasicInfo
+            {
+                FirstName = user!.FirstName,
+                LastName = user.LastName,
+                Email = user.Email!,
+                PhoneNumber = user.PhoneNumber,
+                Bio = user.Bio
+            },
+            Address = new AccountAddressInfo
+            {
+                AddressLine_1 = user.Address?.AddressLine_1!,
+                AddressLine_2 = user.Address?.AddressLine_2,
+                PostalCode = user.Address?.PostalCode!,
+                City = user.Address?.City!
+            }
+        };
 
         return View(viewModel);
     }
@@ -68,37 +88,39 @@ public class AccountController(UserManager<UserEntity> userManager, ApplicationC
 
           if (user != null)
            {
-             if(user.Address!= null)
+                try
                 {
-                    user.Address.AddressLine_1 = model.Address!.AddressLine_1;
-                    user.Address.AddressLine_2 = model.Address!.AddressLine_2;
-                    user.Address.PostalCode = model.Address!.PostalCode;
-                    user.Address.City = model.Address!.City;
-                }
-                else
-                {
-                    user.Address = new AddressEntity
+                    if (user.Address != null)
                     {
-                        AddressLine_1 = model.Address!.AddressLine_1,
-                        AddressLine_2 = model.Address!.AddressLine_2,
-                        PostalCode = model.Address!.PostalCode,
-                        City = model.Address!.City
+                        user.Address.AddressLine_1 = model.Address!.AddressLine_1;
+                        user.Address.AddressLine_2 = model.Address!.AddressLine_2;
+                        user.Address.PostalCode = model.Address!.PostalCode;
+                        user.Address.City = model.Address!.City;
+                    }
+                    else
+                    {
+                        user.Address = new AddressEntity
+                        {
+                            AddressLine_1 = model.Address!.AddressLine_1,
+                            AddressLine_2 = model.Address!.AddressLine_2,
+                            PostalCode = model.Address!.PostalCode,
+                            City = model.Address!.City
 
-                    };
-                }
-                
-             _context.Update(user);
-                await _context.SaveChangesAsync();
+                        };
+                    }
 
-                var result = await _userManager.UpdateAsync(user);
-                if (result.Succeeded)
-                {
+                    _context.Update(user);
+                    await _context.SaveChangesAsync();
+
                     TempData["StatusMessage"] = " Succesfully updated address information.";
                 }
-                else
+                catch 
                 {
                     TempData["StatusMessage"] = "Unable to save address information.";
                 }
+             
+
+              
            }
         }
         else
