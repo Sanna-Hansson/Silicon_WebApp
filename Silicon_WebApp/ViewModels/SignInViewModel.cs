@@ -14,6 +14,8 @@ public class SignInViewModel
     [DataType(DataType.Password)]
     public string Password { get; set; } = null!;
 
+    [Display(Name = "Remember me", Prompt = "Remember me")]
+    
     public bool IsPressistent { get; set; }
 
 

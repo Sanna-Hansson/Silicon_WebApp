@@ -7,7 +7,7 @@
 
     <div class="container">
 
-        @if(!string.IsNullOrEmpty(ViewData["StatusMessage"].ToString()))
+        @if (!string.IsNullOrEmpty(ViewData["StatusMessage"]?.ToString()))
         {
         <div class="alert alert-danger">
             @ViewData["StatusMessage"]
