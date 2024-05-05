@@ -21,7 +21,8 @@ public class AccountController(UserManager<UserEntity> userManager, ApplicationC
 
         var user = await _context.Users.Include(i => i.Address).FirstOrDefaultAsync(x => x.Id == nameIdentifier);
 
-        var viewModel = new AccountDetailsViewModel()
+      
+       var viewModel = new AccountDetailsViewModel()
         {
             Basic = new AccountBasicInfo
             {
@@ -33,8 +34,8 @@ public class AccountController(UserManager<UserEntity> userManager, ApplicationC
             },
             Address = new AccountAddressInfo
             {
-                AddressLine_1 = user.Address?.AddressLine_1!,
-                AddressLine_2 = user.Address?.AddressLine_2,
+                AddressLine_1 = user.Address?.Address1!,
+                AddressLine_2 = user.Address?.Address2,
                 PostalCode = user.Address?.PostalCode!,
                 City = user.Address?.City!
             }
@@ -51,12 +52,12 @@ public class AccountController(UserManager<UserEntity> userManager, ApplicationC
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
             {
-                user.FirstName = user.FirstName;
-                user.LastName = user.LastName;
-                user.Email = user.Email;
-                user.PhoneNumber = user.PhoneNumber;
-                user.UserName = user.Email;
-                user.Bio = user.Bio;
+                user.FirstName = model.Basic!.FirstName;
+                user.LastName = model.Basic!.LastName;
+                user.Email = model.Basic!.Email;
+                user.PhoneNumber = model.Basic!.PhoneNumber;
+                user.UserName = model.Basic!.Email;
+                user.Bio = model.Basic!.Bio;
 
               var result = await _userManager.UpdateAsync(user);
                 if(result.Succeeded)
@@ -92,8 +93,8 @@ public class AccountController(UserManager<UserEntity> userManager, ApplicationC
                 {
                     if (user.Address != null)
                     {
-                        user.Address.AddressLine_1 = model.Address!.AddressLine_1;
-                        user.Address.AddressLine_2 = model.Address!.AddressLine_2;
+                        user.Address.Address1 = model.Address!.AddressLine_1;
+                        user.Address.Address2 = model.Address!.AddressLine_2;
                         user.Address.PostalCode = model.Address!.PostalCode;
                         user.Address.City = model.Address!.City;
                     }
@@ -101,8 +102,8 @@ public class AccountController(UserManager<UserEntity> userManager, ApplicationC
                     {
                         user.Address = new AddressEntity
                         {
-                            AddressLine_1 = model.Address!.AddressLine_1,
-                            AddressLine_2 = model.Address!.AddressLine_2,
+                            Address1 = model.Address!.AddressLine_1,
+                            Address2 = model.Address!.AddressLine_2,
                             PostalCode = model.Address!.PostalCode,
                             City = model.Address!.City
 
